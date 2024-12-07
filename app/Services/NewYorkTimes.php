@@ -3,35 +3,44 @@
 namespace App\Services;
 
 use App\DataSource;
-use App\Models\Article;
-use Illuminate\Support\Facades\Http;
+use App\Interface\IArticleSource;
+use App\Services\News;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
-final class NewsAPI extends News
+final class NewYorkTimes extends News implements IArticleSource
 {
-    public function process(): void
+    /**
+     * Handle articles received from New York Times endpoint
+     *
+     * @return void
+     * @throws \Exception
+     **/
+
+    public function fetch(): void
     {
-        $url = DataSource::NYK->value + env('NYK_API_KEY');
         try {
-            $response = Http::get($url);
-            if ($response->successful()) {
-                $data = array();
-                $articles = $response->json();
-                foreach ($articles as $key => $article) {
-                    array_push($data, new Article([
-                        'source' => $article['source'],
-                        'category' => $article['category'],
-                        'title' => $article['title'],
-                        'description' => $article['description'],
-                        'author' => $article['author'],
-                        'image_url' => $article['image_url'],
-                        'source_url' => $article['source_url'],
-                        'publishedAt' => $article['publishedAt'],
-                        'content' => $article['content'],
-                    ]));
-                }
-                $this->save($data);
+            $url = DataSource::NYK->value . env('NYK_API_KEY');
+            $request = Http::get($url);
+            $response = $this->process($request);
+
+            $result = $response['results'] ?? throw new \Exception("There was an error processing article request. Article not found");
+            $data = array();
+            foreach ($result as $key => $article) {
+                array_push($data, [
+                    'source' => $article['source'] ?? null,
+                    'author' => $article['byline'] ?? null,
+                    'title' => $article['title'] ?? null,
+                    'description' => $article['abstract'] ?? null,
+                    'source_url' => $article['url'] ?? null,
+                    'image_url' => $article['media'][0]['media-metadata'][0]['url'] ?? null,
+                    'category' => $article['section'] ?? null,
+                    'publishedAt' => $article['published_date'] ?? null,
+                    'content' => $article['content'] ?? null,
+                ]);
             }
+            $this->save($data);
+            echo "Successful";
         } catch (\Exception $ex) {
             Log::critical($ex->getMessage());
         }

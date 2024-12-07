@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->string('source');
-            $table->string('category');
+            $table->string('category')->nullable();
             $table->string('title');
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->string('author')->nullable();
             $table->string('image_url')->nullable();
-            $table->string('source_url');
+            $table->string('source_url')->unique();
             $table->dateTime('publishedAt');
-            $table->longText('content');
+            $table->longText('content')->nullable();
             $table->timestamps();
         });
     }

@@ -3,9 +3,10 @@
 namespace App\Interface;
 
 use App\DataSource;
+use Illuminate\Http\Client\Response;
 
 interface INews
 {
     function save(array $articles);
-    function update(array $articles);
+    function process(Response $response): array | bool;
 }
