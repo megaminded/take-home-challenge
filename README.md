@@ -14,7 +14,9 @@
   
   ## API Routes 🔥  
   
-      
-  ## Save Readme ✨  
-  Once you're done, click on the save button to download and save your ReadMe!
-  
+    
+## Approach to development
+    - Define News Article Model
+    - Create Service class that implements an Interface for each API provider
+    - Define controller methods for each API end points based on search queries and user preferences.
+    - 
