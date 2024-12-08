@@ -4,7 +4,7 @@ namespace App;
 
 enum DataSource: String
 {
-    case NewsAPI = "https://newsapi.org/v2/top-headlines?country=us&apiKey=";
-    case NYK = 'https://api.nytimes.com/svc/mostpopular/v2/viewed/30.json?api-key=';
-    // case = ;
+    case NEWS_API = "News API.org";
+    case NEW_YORK_TIMES = 'New York Times';
+    case THE_GUARDIAN =  "The Guardian News";
 }

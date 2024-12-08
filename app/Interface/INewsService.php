@@ -3,10 +3,11 @@
 namespace App\Interface;
 
 use App\DataSource;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Client\Response;
 
-interface INews
+interface INewsService
 {
-    function save(array $articles);
+    function save(Collection $articles): void;
     function process(Response $response): array | bool;
 }
