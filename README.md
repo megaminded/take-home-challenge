@@ -11,6 +11,10 @@
   ~~~
     php artisan serve
   ~~~
+  Start the schedule worker
+  ~~~
+    php artisan schedule:work
+  ~~~
   
   ## API Routes 🔥  
   Returns recent news in all categories
@@ -33,4 +37,5 @@
     - Define News Article Model
     - Create Service class that implements an Interface for each API provider
     - Define controller methods for each API end points based on search queries and user preferences.
-    - 
+    - Create schedule and command class
+    - Write a feature to test.
