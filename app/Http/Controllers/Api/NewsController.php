@@ -22,14 +22,13 @@ class NewsController extends Controller
     }
     public function search(ArticleSearchRequest $request)
     {
-        $search = $request->search;
-        $articles = Article::where('title', 'LIKE', "%{$search}%")
+        $search = $request->keyword;
+        $articles = Article::where('title', 'LIKE', "%$search%")
             ->orWhere('description', 'LIKE', "%{$search}%")
-            ->latest()->paginate(20);
+            ->get();
         return response()->json([
             'success' => true,
             'articles' => ArticleResource::collection($articles),
-            'next_page'
         ]);
     }
     public function category(string $category)
