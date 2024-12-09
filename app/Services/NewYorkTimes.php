@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Http;
  */
 final class NewYorkTimes extends NewsService implements IArticleSource
 {
-    private const NAME = DataSource::NEW_YORK_TIMES->name;
+    public const NAME = DataSource::NEW_YORK_TIMES->value;
 
     // The API key is hardcoded here for simplicity and quick access during development.
     // For production or sensitive applications, I avoid hardcoding API keys or secrets directly in the codebase.

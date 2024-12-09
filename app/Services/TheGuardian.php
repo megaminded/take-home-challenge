@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Http;
 final class TheGuardian extends NewsService implements IArticleSource
 {
     // Data Source
-    const NAME = DataSource::THE_GUARDIAN->value;
+    public const NAME = DataSource::THE_GUARDIAN->value;
 
     // The API key is hardcoded here for simplicity and quick access during development.
     // For production or sensitive applications, I avoid hardcoding API keys or secrets directly in the codebase.
