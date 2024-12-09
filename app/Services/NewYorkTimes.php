@@ -6,6 +6,7 @@ use App\DataSource;
 use App\Interface\IArticleSource;
 use App\Models\Article;
 use App\Services\NewsService;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -35,23 +36,28 @@ final class NewYorkTimes extends NewsService implements IArticleSource
 
             $result = $response['results'] ?? throw new \Exception("There was an error processing article request. Article not found");
             $data = array();
-            foreach ($result as $key => $article) {
-                array_push($data, new Article([
-                    'source' => $article['source'] ?? null,
-                    'author' => $article['byline'] ?? null,
-                    'title' => $article['title'] ?? null,
-                    'description' => $article['abstract'] ?? null,
-                    'source_url' => $article['url'] ?? null,
-                    'image_url' => $article['media'][0]['media-metadata'][0]['url'] ?? null,
-                    'category' => $article['section'] ?? null,
-                    'publishedAt' => $article['published_date'] ?? null,
-                    'content' => $article['content'] ?? null,
-                ]));
+            foreach ($result as $article) {
+                array_push($data, $this->parse($article));
             }
             $this->save(collect($data));
-            echo "Successful";
+            Log::info(self::NAME . ' article fetched successfully');
         } catch (\Exception $ex) {
             Log::critical($ex->getMessage());
         }
+    }
+
+    public function parse(array $article): Article
+    {
+        return new Article([
+            'source' => $article['source'] ?? null,
+            'author' => $article['byline'] ?? null,
+            'title' => $article['title'] ?? null,
+            'description' => $article['abstract'] ?? null,
+            'source_url' => $article['url'] ?? null,
+            'image_url' => $article['media'][0]['media-metadata'][0]['url'] ?? null,
+            'category' => isset($article['section']) ? strtolower($article['section']) : null,
+            'publishedAt' => Carbon::parse($article['published_date'])->toDateTimeString() ?? null,
+            'content' => $article['content'] ?? null,
+        ]);
     }
 }

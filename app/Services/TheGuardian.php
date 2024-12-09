@@ -6,6 +6,7 @@ use App\DataSource;
 use App\Models\Article;
 use App\Services\NewsService;
 use App\Interface\IArticleSource;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -25,23 +26,28 @@ final class TheGuardian extends NewsService implements IArticleSource
             $response = $this->process($request);
             $result = $response['response']['results'] ?? throw new \Exception("There was an error processing article request. Article not found");
             $data = array();
-            foreach ($result as $key => $article) {
-                array_push($data, new Article([
-                    'source' => $article['fields']['publication'] ?? null,
-                    'author' => $article['fields']['byline'] ?? null,
-                    'title' => $article['fields']['headline'] ?? null,
-                    'description' => $article['fields']['trailText'] ?? null,
-                    'source_url' => $article['webUrl'],
-                    'image_url' => $article['fields']['thumbnail'] ?? null,
-                    'category' => $article['sectionName'] ?? null,
-                    'publishedAt' => $article['webPublicationDate'] ?? null,
-                    'content' => $article['fields']['bodyText'] ?? null,
-                ]));
+            foreach ($result as $article) {
+                array_push($data, $this->parse($article));
             }
             $this->save(collect($data));
-            echo "Successful";
+            Log::info(self::NAME . ' article fetched successfully');
         } catch (\Exception $ex) {
             Log::critical($ex->getMessage());
         }
+    }
+
+    public function parse(array $article): Article
+    {
+        return new Article([
+            'source' => $article['fields']['publication'] ?? null,
+            'author' => $article['fields']['byline'] ?? null,
+            'title' => $article['fields']['headline'] ?? null,
+            'description' => $article['fields']['trailText'] ?? null,
+            'source_url' => $article['webUrl'],
+            'image_url' => $article['fields']['thumbnail'] ?? null,
+            'category' => isset($article['sectionName']) ? strtolower($article['sectionName']) : null,
+            'publishedAt' => Carbon::parse($article['webPublicationDate'])->toDateTimeString() ?? null,
+            'content' => $article['fields']['bodyText'] ?? null,
+        ]);
     }
 }

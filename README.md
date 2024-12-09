@@ -13,7 +13,21 @@
   ~~~
   
   ## API Routes 🔥  
-  
+  Returns recent news in all categories
+  -api/news/category 
+
+  Returns news based on search query
+  -api/news/date
+
+  Returns news based on selected category
+  -api/news/index 
+
+  Returns news based on selected source
+  -api/news/search
+
+  Returns news based on selected date
+  -api/news/source 
+
     
 ## Approach to development
     - Define News Article Model
